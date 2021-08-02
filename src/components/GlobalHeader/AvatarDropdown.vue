@@ -1,0 +1,78 @@
+<template>
+  <a-dropdown v-if="currentUser && currentUser.address" placement="bottomRight">
+    <span class="ant-pro-account-avatar">
+      <a-avatar size="small" src="/logo.png" class="antd-pro-global-header-index-avatar" />
+      <span>{{ currentUser.address | addressDesensitization }}</span>
+    </span>
+    <template v-slot:overlay>
+      <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
+        <!-- <a-menu-item v-if="menu" key="center" @click="handleToCenter">
+          <a-icon type="user" />
+          {{ $t('menu.account.center') }}
+        </a-menu-item>
+        <a-menu-item v-if="menu" key="settings" @click="handleToSettings">
+          <a-icon type="setting" />
+          {{ $t('menu.account.settings') }}
+        </a-menu-item>
+        <a-menu-divider v-if="menu" /> -->
+        <a-menu-item key="logout" @click="handleLogout">
+          <a-icon type="logout" />
+          <!-- {{ $t('menu.account.logout') }} -->
+          {{ $t('web3.wallet.disconnect') }}
+        </a-menu-item>
+      </a-menu>
+    </template>
+  </a-dropdown>
+  <span v-else>
+    <a-spin size="small" :style="{ marginLeft: 8, marginRight: 8 }" />
+  </span>
+</template>
+
+<script>
+import { Modal } from 'ant-design-vue'
+
+export default {
+  name: 'AvatarDropdown',
+  props: {
+    currentUser: {
+      type: Object,
+      default: () => null
+    },
+    menu: {
+      type: Boolean,
+      default: true
+    }
+  },
+  methods: {
+    handleToCenter () {
+      this.$router.push({ path: '/account/center' })
+    },
+    handleToSettings () {
+      this.$router.push({ path: '/account/settings' })
+    },
+    handleLogout (e) {
+      Modal.confirm({
+        title: this.$t('web3.wallet.disconnect.dialog.title'),
+        onOk: async () => {
+          this.$store.dispatch('closeWallet')
+            .then(() => {
+              this.$router.push({ name: 'login' })
+            })
+        },
+        onCancel () {}
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.ant-pro-drop-down {
+  /deep/ .action {
+    margin-right: 8px;
+  }
+  /deep/ .ant-dropdown-menu-item {
+    min-width: 160px;
+  }
+}
+</style>
